@@ -1,4 +1,5 @@
 import random
+import os
 
 INITIAL_MARKER = ' '
 HUMAN_MARKER = 'X'
@@ -8,6 +9,8 @@ def prompt(message):
     print(f'==> {message}')
 
 def display_board(board):
+    os.system('clear')
+    print('')
 
     print('')
     print('       |        |        ')
