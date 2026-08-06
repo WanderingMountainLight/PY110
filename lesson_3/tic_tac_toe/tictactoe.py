@@ -47,7 +47,7 @@ def player_chooses_square(board):
 
     while True:
         valid_choices = [str(num) for num in empty_square(board)]
-        prompt(f"Choose a square ({', '.join(valid_choices)}):")
+        prompt(f"Choose a square ({join_or(valid_choices)}):")
         square = input().strip()
         if square in valid_choices:
             break
@@ -89,13 +89,29 @@ def detect_winner(board):
 
     return None
 
+def join_or(numbers, seperator=', ', word='or'):
+    if len(numbers) == 0:
+        return ''
+    elif len(numbers) == 1:
+        return str(numbers[0])
+    elif len(numbers) == 2:
+        return f'{numbers[0]} {word} {numbers[1]}'
+    else:
+        return f"{seperator.join(str(num) for num in numbers[:-1])}{seperator}{word} {numbers[-1]}"
+
 
 
 
 
 board = initialize_board()
 
+WINNER_GAME_COUNT = 5
+
+
 def play_tictactoe():
+    player_win_count = 0
+    computer_win_count = 0
+
     while True:
         board = initialize_board()
 
@@ -117,8 +133,20 @@ def play_tictactoe():
         else:
             prompt("It's a tie!")
 
+        if detect_winner(board) == 'Player':
+            player_win_count += 1
+        if detect_winner(board) == 'Computer':
+            computer_win_count += 1
+
+        if player_win_count == WINNER_GAME_COUNT:
+            print(f'Player wins {player_win_count} - {computer_win_count}')
+        elif computer_win_count == WINNER_GAME_COUNT:
+            print(f'Computer wins {computer_win_count} - {player_win_count}')
+
         prompt("Play again? (y or n)")
         answer = input().lower()
+        if computer_win_count == WINNER_GAME_COUNT or player_win_count == WINNER_GAME_COUNT:
+                prompt('Thanks for playing Tic Tac Toe!')
 
         if answer[0] != 'y':
             break
