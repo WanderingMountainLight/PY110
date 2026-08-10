@@ -4,6 +4,8 @@ import os
 INITIAL_MARKER = ' '
 HUMAN_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+WINNER_GAME_COUNT = 5
+
 
 def prompt(message):
     print(f'==> {message}')
@@ -58,8 +60,11 @@ def player_chooses_square(board):
 
 def computer_chooses_square(board):
     if len(empty_square(board)) == 0:
-        return
-    square = random.choice(empty_square(board))
+        return None
+
+    square = comp_find_at_risk(board)
+    if not square:
+        square = random.choice(empty_square(board))
     board[square] = COMPUTER_MARKER
 
 def board_full(board):
@@ -99,14 +104,24 @@ def join_or(numbers, seperator=', ', word='or'):
     else:
         return f"{seperator.join(str(num) for num in numbers[:-1])}{seperator}{word} {numbers[-1]}"
 
-
+def comp_find_at_risk(board):
+    winning_lines = [
+        [1, 2, 3], [4, 5, 6], [7, 8, 9],  # rows
+        [1, 4, 7], [2, 5, 8], [3, 6, 9],  # columns
+        [1, 5, 9], [3, 5, 7]              # diagonals
+    ]
+    for line in winning_lines:
+        values = [board[key] for key in line]
+        count = values.count(HUMAN_MARKER)
+        if count == 2:
+            for index, value in enumerate(values):
+                if value == ' ':
+                    return line[index]
+    return None
 
 
 
 board = initialize_board()
-
-WINNER_GAME_COUNT = 5
-
 
 def play_tictactoe():
     player_win_count = 0
