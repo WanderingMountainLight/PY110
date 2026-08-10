@@ -63,7 +63,7 @@ def computer_chooses_square(board):
         return None
 
     square = comp_find_at_risk(board)
-    if not square:
+    if square is None:
         square = random.choice(empty_square(board))
     board[square] = COMPUTER_MARKER
 
