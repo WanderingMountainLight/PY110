@@ -5,6 +5,7 @@ INITIAL_MARKER = ' '
 HUMAN_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 WINNER_GAME_COUNT = 5
+FIRST_MOVE = 'choose'
 
 
 def prompt(message):
@@ -65,6 +66,8 @@ def computer_chooses_square(board):
     square = comp_find_at_risk(board, COMPUTER_MARKER)
     if square is None:
         square = comp_find_at_risk(board, HUMAN_MARKER)
+        if square is None and board[5] == ' ':
+            square = 5
         if square is None:
             square = random.choice(empty_square(board))
     board[square] = COMPUTER_MARKER
@@ -121,6 +124,12 @@ def comp_find_at_risk(board, marker):
                 if value == ' ':
                     return line[index]
     return None
+
+def start_game():
+    choices = {
+        1: 'Player',
+        2: 'Computer',
+    }
 
 
 
