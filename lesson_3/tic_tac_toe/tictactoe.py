@@ -164,7 +164,6 @@ def play_tictactoe():
         prompt("Play again? (y or n)")
         answer = input().lower()
         if computer_win_count == WINNER_GAME_COUNT or player_win_count == WINNER_GAME_COUNT:
-                prompt('Thanks for playing Tic Tac Toe!')
                 break
 
         if answer[0] != 'y':
