@@ -62,9 +62,11 @@ def computer_chooses_square(board):
     if len(empty_square(board)) == 0:
         return None
 
-    square = comp_find_at_risk(board)
+    square = comp_find_at_risk(board, COMPUTER_MARKER)
     if square is None:
-        square = random.choice(empty_square(board))
+        square = comp_find_at_risk(board, HUMAN_MARKER)
+        if square is None:
+            square = random.choice(empty_square(board))
     board[square] = COMPUTER_MARKER
 
 def board_full(board):
@@ -104,7 +106,7 @@ def join_or(numbers, seperator=', ', word='or'):
     else:
         return f"{seperator.join(str(num) for num in numbers[:-1])}{seperator}{word} {numbers[-1]}"
 
-def comp_find_at_risk(board):
+def comp_find_at_risk(board, marker):
     winning_lines = [
         [1, 2, 3], [4, 5, 6], [7, 8, 9],  # rows
         [1, 4, 7], [2, 5, 8], [3, 6, 9],  # columns
@@ -112,8 +114,9 @@ def comp_find_at_risk(board):
     ]
     for line in winning_lines:
         values = [board[key] for key in line]
-        count = values.count(HUMAN_MARKER)
-        if count == 2:
+        marker_count = values.count(marker)
+
+        if marker_count == 2:
             for index, value in enumerate(values):
                 if value == ' ':
                     return line[index]
