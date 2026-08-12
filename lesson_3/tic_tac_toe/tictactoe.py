@@ -126,10 +126,16 @@ def comp_find_at_risk(board, marker):
     return None
 
 def start_game():
-    choices = {
-        1: 'Player',
-        2: 'Computer',
-    }
+    while True:
+        prompt('Choose who goes first. Pick 1 for player, 2 for computer.')
+        selection = input().strip()
+        if selection == '1':
+            return 'player'
+        elif selection == '2':
+            return 'computer'
+        else:
+            prompt('That is an invalid selection. ' \
+            'Please Pick 1 for player, 2 for computer.')
 
 
 
@@ -138,20 +144,28 @@ board = initialize_board()
 def play_tictactoe():
     player_win_count = 0
     computer_win_count = 0
+    current_move = None
 
     while True:
         board = initialize_board()
-
+        if FIRST_MOVE == 'choose':
+            current_move = start_game()
+        else:
+            current_move = FIRST_MOVE
         while True:
             display_board(board)
 
-            player_chooses_square(board)
-            if someone_won(board) or board_full(board):
-                break
+            if current_move == 'player':
+                player_chooses_square(board)
+                current_move = 'computer'
+                if someone_won(board) or board_full(board):
+                    break
 
-            computer_chooses_square(board)
-            if someone_won(board) or board_full(board):
-                break
+            elif current_move == 'computer':
+                computer_chooses_square(board)
+                current_move = 'player'
+                if someone_won(board) or board_full(board):
+                    break
 
         display_board(board)    
 
