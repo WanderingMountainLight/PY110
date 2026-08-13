@@ -137,6 +137,19 @@ def start_game():
             prompt('That is an invalid selection. ' \
             'Please Pick 1 for player, 2 for computer.')
 
+def continue_playing():
+        answer = input().lower()
+        prompt("Play again? (y or n)")
+
+        if answer in ['y', 'yes', 'yeah']:
+            return 'y'
+        elif answer in ['n', 'no']:
+            False
+        else:
+            prompt('That is not a valid choice.' \
+            ' Please enter "Yes" or "No".')
+            answer = input().lower()
+
 
 
 board = initialize_board()
@@ -184,14 +197,12 @@ def play_tictactoe():
         elif computer_win_count == WINNER_GAME_COUNT:
             print(f'Computer wins {computer_win_count} - {player_win_count}')
 
-        prompt("Play again? (y or n)")
-        answer = input().lower()
         if computer_win_count == WINNER_GAME_COUNT or player_win_count == WINNER_GAME_COUNT:
                 break
 
-        if answer[0] != 'y':
-            break
-
+    continue_playing()
     prompt('Thanks for playing Tic Tac Toe!')
 
 play_tictactoe()
+
+
