@@ -138,18 +138,29 @@ def start_game():
             'Please Pick 1 for player, 2 for computer.')
 
 def continue_playing():
-        answer = input().lower()
+    while True:
         prompt("Play again? (y or n)")
-
-        if answer in ['y', 'yes', 'yeah']:
-            return 'y'
-        elif answer in ['n', 'no']:
-            False
+        answer = input().lower()
+        
+        if answer == 'y':
+            return True
+        elif answer == 'n':
+            return False
         else:
             prompt('That is not a valid choice.' \
-            ' Please enter "Yes" or "No".')
-            answer = input().lower()
+            ' Please enter "y" or "n".')
 
+def choose_square(board, current_player):
+    if current_player == 'player':
+        player_chooses_square(board)
+    elif current_player == 'computer':
+        computer_chooses_square(board)
+
+def alternate_player(current_player):
+    if current_player == 'player':
+        return 'computer'
+    elif current_player == 'computer':
+        return 'player'
 
 
 board = initialize_board()
@@ -168,16 +179,11 @@ def play_tictactoe():
         while True:
             display_board(board)
 
-            if current_move == 'player':
-                player_chooses_square(board)
-                current_move = 'computer'
-                if someone_won(board) or board_full(board):
-                    break
+            choose_square(board, current_move)
 
-            elif current_move == 'computer':
-                computer_chooses_square(board)
-                current_move = 'player'
-                if someone_won(board) or board_full(board):
+            current_move = alternate_player(current_move)
+
+            if someone_won(board) or board_full(board):
                     break
 
         display_board(board)    
@@ -198,11 +204,11 @@ def play_tictactoe():
             print(f'Computer wins {computer_win_count} - {player_win_count}')
 
         if computer_win_count == WINNER_GAME_COUNT or player_win_count == WINNER_GAME_COUNT:
-                break
+            break
 
-    continue_playing()
+        if not continue_playing():
+            break
+
     prompt('Thanks for playing Tic Tac Toe!')
 
 play_tictactoe()
-
-
