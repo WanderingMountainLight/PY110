@@ -52,7 +52,7 @@
 #     {'rank': 'Queen', 'suit': 'Diamonds'},
 #     {'rank': 'King', 'suit': 'Diamonds'}
 # ]
-
+import random
 
 def build_deck():
     deck = []
@@ -65,6 +65,14 @@ def build_deck():
     return deck
 
 initial_deck = build_deck()
+
+# for item in initial_deck:
+#     print(item)
+
+def shuffle(deck):
+   random.shuffle(deck)
+
+shuffle(initial_deck)
 
 for item in initial_deck:
     print(item)
