@@ -64,7 +64,6 @@ def build_deck():
             deck.append({'rank': value, 'suit': suit})
     return deck
 
-initial_deck = build_deck()
 
 # for item in initial_deck:
 #     print(item)
@@ -72,7 +71,53 @@ initial_deck = build_deck()
 def shuffle(deck):
    random.shuffle(deck)
 
+
+# for item in initial_deck:
+#     print(item)
+
+def deal_card(deck, hand):
+    card = deck.pop()
+    hand.append(card)
+
+def cal_total(hand):
+    total = 0
+    for card in hand:
+        if card['rank'] == 'Ace':
+            total += 11
+        elif card['rank'] in ['Jack', 'Queen', 'King']:
+            total += 10
+        else:
+            total += card['rank']
+    return total
+
+
+def is_busted(total):
+    return total > 21
+
+def ace_value(score, hand):
+    aces = len([card['rank'] for card in hand if card['rank'] == 'Ace'])
+    while score > 21 and aces >= 1:
+            score -= 10
+            aces -= 1
+    return score
+
+player_hand = []
+dealer_hand = []
+
+initial_deck = build_deck()
+
 shuffle(initial_deck)
 
-for item in initial_deck:
-    print(item)
+deal_card(initial_deck, player_hand)
+deal_card(initial_deck, player_hand)
+
+deal_card(initial_deck, dealer_hand)
+deal_card(initial_deck, dealer_hand)
+
+print(f'Player has {player_hand}')
+# print(f'Dealer has {dealer_hand}')
+
+player_score = cal_total(player_hand)
+
+is_busted(player_score)
+ace_value(player_score, player_hand)
