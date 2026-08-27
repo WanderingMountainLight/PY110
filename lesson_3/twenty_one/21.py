@@ -54,6 +54,9 @@
 # ]
 import random
 
+def prompt(phrase):
+    print(f'===> {phrase}')
+
 def build_deck():
     deck = []
     suits = ['Spades', 'Hearts', 'Clubs', 'Diamonds']
@@ -79,7 +82,7 @@ def deal_card(deck, hand):
     card = deck.pop()
     hand.append(card)
 
-def cal_total(hand):
+def calc_total(hand):
     total = 0
     for card in hand:
         if card['rank'] == 'Ace':
@@ -88,6 +91,7 @@ def cal_total(hand):
             total += 10
         else:
             total += card['rank']
+    total = ace_value(total, hand)
     return total
 
 
@@ -100,6 +104,32 @@ def ace_value(score, hand):
             score -= 10
             aces -= 1
     return score
+
+def player_hit():
+    prompt('Would you like to hit or stay?')
+    while True:
+        response = input().strip().lower()
+        if response in ['hit', 'stay']:
+            if response == 'hit':
+                return True
+            else:
+                return False
+        else:
+            prompt('That is not a valid input. Please choose hit or stay')
+
+def score_comparison(player, dealer):
+    if player <= 21 and dealer <= 21:
+        if player == dealer:
+            return f"The game ends in a tie."
+        elif player > dealer:
+            return f'Player wins! Final score {player} - {dealer}'
+        elif dealer > player:
+                    return f'Dealer wins! Final score {dealer} - {player}'
+    else:
+        if player > 21:
+            return f'Player busted. Dealer wins.'
+        elif dealer > 21:
+            return f'Dealer busted. Player wins'
 
 player_hand = []
 dealer_hand = []
@@ -121,3 +151,4 @@ player_score = cal_total(player_hand)
 
 is_busted(player_score)
 ace_value(player_score, player_hand)
+
