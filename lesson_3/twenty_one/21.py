@@ -1,57 +1,3 @@
-# intial_deck =[
-#     {'rank': 'Ace', 'suit': 'Spades'},
-#     {'rank': 2, 'suit': 'Spades'},
-#     {'rank': 3, 'suit': 'Spades'},
-#     {'rank': 4, 'suit': 'Spades'},
-#     {'rank': 5, 'suit': 'Spades'},
-#     {'rank': 6, 'suit': 'Spades'},
-#     {'rank': 7, 'suit': 'Spades'},
-#     {'rank': 8, 'suit': 'Spades'},
-#     {'rank': 9, 'suit': 'Spades'},
-#     {'rank': 10, 'suit': 'Spades'},
-#     {'rank': 'Jack', 'suit': 'Spades'},
-#     {'rank': 'Queen', 'suit': 'Spades'},
-#     {'rank': 'King', 'suit': 'Spades'},
-#     {'rank': 'Ace', 'suit': 'Hearts'},
-#     {'rank': 2, 'suit': 'Hearts'},
-#     {'rank': 3, 'suit': 'Hearts'},
-#     {'rank': 4, 'suit': 'Hearts'},
-#     {'rank': 5, 'suit': 'Hearts'},
-#     {'rank': 6, 'suit': 'Hearts'},
-#     {'rank': 7, 'suit': 'Hearts'},
-#     {'rank': 8, 'suit': 'Hearts'},
-#     {'rank': 9, 'suit': 'Hearts'},
-#     {'rank': 10, 'suit': 'Hearts'},
-#     {'rank': 'Jack', 'suit': 'Hearts'},
-#     {'rank': 'Queen', 'suit': 'Hearts'},
-#     {'rank': 'King', 'suit': 'Hearts'},
-#     {'rank': 'Ace', 'suit': 'Clubs'},
-#     {'rank': 2, 'suit': 'Clubs'},
-#     {'rank': 3, 'suit': 'Clubs'},
-#     {'rank': 4, 'suit': 'Clubs'},
-#     {'rank': 5, 'suit': 'Clubs'},
-#     {'rank': 6, 'suit': 'Clubs'},
-#     {'rank': 7, 'suit': 'Clubs'},
-#     {'rank': 8, 'suit': 'Clubs'},
-#     {'rank': 9, 'suit': 'Clubs'},
-#     {'rank': 10, 'suit': 'Clubs'},
-#     {'rank': 'Jack', 'suit': 'Clubs'},
-#     {'rank': 'Queen', 'suit': 'Clubs'},
-#     {'rank': 'King', 'suit': 'Clubs'},
-#     {'rank': 'Ace', 'suit': 'Diamonds'},
-#     {'rank': 2, 'suit': 'Diamonds'},
-#     {'rank': 3, 'suit': 'Diamonds'},
-#     {'rank': 4, 'suit': 'Diamonds'},
-#     {'rank': 5, 'suit': 'Diamonds'},
-#     {'rank': 6, 'suit': 'Diamonds'},
-#     {'rank': 7, 'suit': 'Diamonds'},
-#     {'rank': 8, 'suit': 'Diamonds'},
-#     {'rank': 9, 'suit': 'Diamonds'},
-#     {'rank': 10, 'suit': 'Diamonds'},
-#     {'rank': 'Jack', 'suit': 'Diamonds'},
-#     {'rank': 'Queen', 'suit': 'Diamonds'},
-#     {'rank': 'King', 'suit': 'Diamonds'}
-# ]
 import random
 
 def prompt(phrase):
@@ -67,16 +13,8 @@ def build_deck():
             deck.append({'rank': value, 'suit': suit})
     return deck
 
-
-# for item in initial_deck:
-#     print(item)
-
 def shuffle(deck):
    random.shuffle(deck)
-
-
-# for item in initial_deck:
-#     print(item)
 
 def deal_card(deck, hand):
     card = deck.pop()
@@ -117,6 +55,9 @@ def player_hit():
         else:
             prompt('That is not a valid input. Please choose hit or stay')
 
+#def dealer_logic(hand):
+    #work_in_progress
+
 def score_comparison(player, dealer):
     if player <= 21 and dealer <= 21:
         if player == dealer:
@@ -131,24 +72,60 @@ def score_comparison(player, dealer):
         elif dealer > 21:
             return f'Dealer busted. Player wins'
 
-player_hand = []
-dealer_hand = []
+def display_hand(hand, hide_extra_cards=False):
+    card_strings = []
+    for card in hand:
+        card_strings.append(f"{card['rank']} of {card['suit']}")
+    if hide_extra_cards:
+        display = [card_strings[0], 'Unknown']
+        hand_string = ', '.join(display)
+        return hand_string
+    else:
+        hand_string = ', '.join(card_strings)
+        return hand_string
 
-initial_deck = build_deck()
 
-shuffle(initial_deck)
+def game_loop():
 
-deal_card(initial_deck, player_hand)
-deal_card(initial_deck, player_hand)
+        player_hand = []
+        dealer_hand = []
 
-deal_card(initial_deck, dealer_hand)
-deal_card(initial_deck, dealer_hand)
+        prompt('Welcome to 21.')
 
-print(f'Player has {player_hand}')
-# print(f'Dealer has {dealer_hand}')
+        initial_deck = build_deck()
 
-player_score = cal_total(player_hand)
+        shuffle(initial_deck)
 
-is_busted(player_score)
-ace_value(player_score, player_hand)
+        deal_card(initial_deck, player_hand)
+        deal_card(initial_deck, player_hand)
 
+        deal_card(initial_deck, dealer_hand)
+        deal_card(initial_deck, dealer_hand)
+
+        print(f'You currently hold: {display_hand(player_hand)}')
+        print(f"The dealer currently holds: {display_hand(dealer_hand, True)}")
+
+        player_score = calc_total(player_hand)
+        dealer_score = calc_total(dealer_hand)
+
+        print(f'Your current score is {player_score}')
+
+        while player_hit():
+            deal_card(initial_deck, player_hand)
+            print(f'You currently hold: {display_hand(player_hand)}')
+            player_score = calc_total(player_hand)
+            if is_busted(player_score):
+                break
+            print(f'Your current score is {player_score}')
+
+        if is_busted(player_score):
+            score_comparison(player_score, dealer_score)
+        else:
+
+
+        
+
+        # is_busted(player_score)
+        # ace_value(player_score, player_hand)
+
+game_loop()
