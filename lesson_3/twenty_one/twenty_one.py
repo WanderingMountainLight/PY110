@@ -2,6 +2,11 @@
 
 import random
 
+TARGET_SCORE = 21
+CPU_HIT_LIMIT = 17
+BEST_OF = 5
+WINS_NEEDED = BEST_OF // 2 + 1
+
 def prompt(phrase):
     """Print a message prefixed with '===>' for visual distinction."""
     print(f'===> {phrase}')
@@ -40,13 +45,13 @@ def calc_total(hand):
     return total
 
 def is_busted(total):
-    """Returns True if total is > 21, False otherwise"""
-    return total > 21
+    """Returns True if total is > TARGET_SCORE, False otherwise"""
+    return total > TARGET_SCORE
 
 def ace_value(score, hand):
     """Convert Aces from 11 to 1 as needed to bring score under 21, and return the new score"""
     aces = len([card['rank'] for card in hand if card['rank'] == 'Ace'])
-    while score > 21 and aces >= 1:
+    while score > TARGET_SCORE and aces >= 1:
         score -= 10
         aces -= 1
     return score
@@ -62,15 +67,24 @@ def player_hit():
 
 def score_comparison(player, dealer):
     """Compares player and dealer totals, returns message describing who won"""
-    if player <= 21 and dealer <= 21:
+    if player <= TARGET_SCORE and dealer <= TARGET_SCORE:
         if player == dealer:
-            return "The game ends in a tie."
+            message = "The game ends in a tie."
+            return message, 'tie'
         if player > dealer:
-            return f'Player wins! Final score {player} - {dealer}'
-        return f'Dealer wins! Final score {dealer} - {player}'
-    if player > 21:
-        return 'Player busted. Dealer wins.'
-    return 'Dealer busted. Player wins'
+            winner = 'player'
+            message = f'Player wins! Final score {player} - {dealer}'
+            return message, winner
+        message = f'Dealer wins! Final score {dealer} - {player}'
+        winner = 'dealer'
+        return message, winner
+    if player > TARGET_SCORE:
+        message = 'Player busted. Dealer wins.'
+        winner = 'dealer'
+        return message, winner
+    message = 'Dealer busted. Player wins'
+    winner = 'player'
+    return message, winner
 
 def display_hand(hand, hide_extra_cards=False):
     """Formats hand and determines if additional cards should be hidden, returns formatted string"""
@@ -91,7 +105,7 @@ def game_loop():
     player_hand = []
     dealer_hand = []
 
-    prompt('Welcome to 21.')
+    prompt(f'Welcome to {TARGET_SCORE}.')
 
     initial_deck = build_deck()
 
@@ -111,9 +125,10 @@ def game_loop():
 
     print(f'Your current score is {player_score}')
 
-    if player_score == 21:
-        print(score_comparison(player_score, dealer_score))
-        return
+    if player_score == TARGET_SCORE:
+        message, result = score_comparison(player_score, dealer_score)
+        print(message)
+        return result
 
     while player_hit():
         deal_card(initial_deck, player_hand)
@@ -124,15 +139,19 @@ def game_loop():
         print(f'Your current score is {player_score}')
 
     if is_busted(player_score):
-        print(score_comparison(player_score, dealer_score))
-    else:
-        while dealer_score < 17:
-            deal_card(initial_deck, dealer_hand)
-            dealer_score = calc_total(dealer_hand)
+        message, result = score_comparison(player_score, dealer_score)
+        print(message)
+        return result
 
-        print(f'''Final hands are Player: {display_hand(player_hand)}
-                Dealer: {display_hand(dealer_hand)}''')
-        print(score_comparison(player_score, dealer_score))
+    while dealer_score < CPU_HIT_LIMIT:
+        deal_card(initial_deck, dealer_hand)
+        dealer_score = calc_total(dealer_hand)
+
+    print(f'''Final hands are Player: {display_hand(player_hand)}
+            Dealer: {display_hand(dealer_hand)}''')
+    message, result = score_comparison(player_score, dealer_score)
+    print(message)
+    return result
 
 def play_again():
     """Prompts player for another round. Returns True if player responds 'yes'"""
@@ -143,8 +162,37 @@ def play_again():
             return response == 'yes'
         prompt('That is not an accepted response. Please respond yes or no.')
 
+def wins_comparison(pwins, dwins):
+    """Compares player and dealer win totals. Prints an updated string"""
+    if pwins > dwins:
+        if pwins < WINS_NEEDED:
+            prompt(f'Player leads {pwins} - {dwins}')
+        else:
+            prompt(f'Player wins best of 5. Final score: {pwins} - {dwins}')
+    elif dwins > pwins:
+        if dwins < WINS_NEEDED:
+            prompt(f'Dealer leads {dwins} - {pwins}')
+        else:
+            prompt(f'Dealer wins best of 5. Final score: {dwins} - {pwins}')
+    else:
+        prompt(f'The score is tied: Player {pwins} - Dealer {dwins}')
+
+
+player_wins = 0
+dealer_wins = 0
 
 while True:
-    game_loop()
-    if not play_again():
-        break
+    game_winner = game_loop()
+    if game_winner == 'player':
+        player_wins += 1
+    elif game_winner == 'dealer':
+        dealer_wins += 1
+
+    wins_comparison(player_wins,dealer_wins)
+
+    if WINS_NEEDED in (player_wins, dealer_wins):
+        if play_again():
+            player_wins = 0
+            dealer_wins = 0
+        else:
+            break
