@@ -1,6 +1,7 @@
 """PY110 Twenty-One card game"""
 
 import random
+import os
 
 TARGET_SCORE = 21
 CPU_HIT_LIMIT = 17
@@ -98,6 +99,15 @@ def display_hand(hand, hide_extra_cards=False):
     hand_string = ', '.join(card_strings)
     return hand_string
 
+def display_table(player_hand, dealer_hand, end_of_round=False):
+    os.system('clear')
+    if not end_of_round:
+        prompt(f'The dealer currently holds {display_hand(dealer_hand, True)}')
+    else:
+        prompt(f"Dealer holds {display_hand(dealer_hand)}")
+
+    prompt(f'You currently hold {display_hand(player_hand)}')
+
 def game_loop():
     """Runs complete round of 21. Deals initial hands to player and dealer. 
     Runs player turn, then dealer if player didn't bust. Displays final result"""
@@ -117,8 +127,7 @@ def game_loop():
     deal_card(initial_deck, dealer_hand)
     deal_card(initial_deck, dealer_hand)
 
-    print(f'You currently hold: {display_hand(player_hand)}')
-    print(f"The dealer currently holds: {display_hand(dealer_hand, True)}")
+    display_table(player_hand, dealer_hand)
 
     player_score = calc_total(player_hand)
     dealer_score = calc_total(dealer_hand)
@@ -132,7 +141,7 @@ def game_loop():
 
     while player_hit():
         deal_card(initial_deck, player_hand)
-        print(f'You currently hold: {display_hand(player_hand)}')
+        display_table(player_hand, dealer_hand)
         player_score = calc_total(player_hand)
         if is_busted(player_score):
             break
@@ -177,22 +186,23 @@ def wins_comparison(pwins, dwins):
     else:
         prompt(f'The score is tied: Player {pwins} - Dealer {dwins}')
 
+def play_match():
+    player_wins = 0
+    dealer_wins = 0
+    while True:
+        game_winner = game_loop()
+        if game_winner == 'player':
+            player_wins += 1
+        elif game_winner == 'dealer':
+            dealer_wins += 1
 
-player_wins = 0
-dealer_wins = 0
+        wins_comparison(player_wins,dealer_wins)
 
-while True:
-    game_winner = game_loop()
-    if game_winner == 'player':
-        player_wins += 1
-    elif game_winner == 'dealer':
-        dealer_wins += 1
+        if WINS_NEEDED in (player_wins, dealer_wins):
+            if play_again():
+                player_wins = 0
+                dealer_wins = 0
+            else:
+                break
 
-    wins_comparison(player_wins,dealer_wins)
-
-    if WINS_NEEDED in (player_wins, dealer_wins):
-        if play_again():
-            player_wins = 0
-            dealer_wins = 0
-        else:
-            break
+play_match()
